@@ -1,36 +1,45 @@
-import java.util.Scanner;
-import java.security.*;
-import javax.crypto.Cipher;
-import java.util.Base64;
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Diffie-Hellman Key Exchange</h2>
 
-public class RSA {
-    public static void main(String[] args) throws Exception {
-        Scanner sc = new Scanner(System.in);
+Prime (p): <input id="p" value="23"><br><br>
+Generator (g): <input id="g" value="5"><br><br>
+Alice's Private Key (a): <input id="a" value="6"><br><br>
+Bob's Private Key (b): <input id="b" value="15"><br><br>
 
-        System.out.print("Enter the text: ");
-        String text = sc.nextLine();
+<button onclick="exchange()">Generate Key</button>
+<p id="result"></p>
 
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-        kpg.initialize(2048);
+<script>
+function exchange() {
+    let p = BigInt(document.getElementById("p").value);
+    let g = BigInt(document.getElementById("g").value);
+    let a = BigInt(document.getElementById("a").value);
+    let b = BigInt(document.getElementById("b").value);
 
-        KeyPair kp = kpg.generateKeyPair();
-        PublicKey publicKey = kp.getPublic();
-        PrivateKey privateKey = kp.getPrivate();
-
-        Cipher cipher = Cipher.getInstance("RSA");
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-
-        byte[] encrypted = cipher.doFinal(text.getBytes("UTF-8"));
-
-        System.out.println("Encrypted Text: "
-            + Base64.getEncoder().encodeToString(encrypted));
-
-        cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        byte[] decrypted = cipher.doFinal(encrypted);
-
-        System.out.println("Decrypted Text: "
-            + new String(decrypted, "UTF-8"));
-
-        sc.close();
+    function modPow(base, exp, mod) {
+        let result = 1n;
+        while (exp > 0n) {
+            if (exp % 2n === 1n)
+                result = result * base % mod;
+            base = base * base % mod;
+            exp = exp / 2n;
+        }
+        return result;
     }
+
+    let A = modPow(g, a, p);
+    let B = modPow(g, b, p);
+    let keyA = modPow(B, a, p);
+    let keyB = modPow(A, b, p);
+
+    document.getElementById("result").innerHTML =
+        "Alice's Public Key: " + A +
+        "<br>Bob's Public Key: " + B +
+        "<br>Alice's Shared Key: " + keyA +
+        "<br>Bob's Shared Key: " + keyB;
 }
+</script>
+</body>
+</html>
