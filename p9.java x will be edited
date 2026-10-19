@@ -1,29 +1,36 @@
+import java.util.Scanner;
+import java.security.*;
 import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
-public class BlowfishDemo1 {
+public class RSA {
     public static void main(String[] args) throws Exception {
-        String text = "HELLO WORLD";
-        String myKey = "MYSECRETKEY12345";
+        Scanner sc = new Scanner(System.in);
 
-        SecretKeySpec key = new SecretKeySpec(
-            myKey.getBytes("UTF-8"), "Blowfish");
+        System.out.print("Enter the text: ");
+        String text = sc.nextLine();
 
-        Cipher cipher = Cipher.getInstance("Blowfish");
-        cipher.init(Cipher.ENCRYPT_MODE, key);
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+        kpg.initialize(2048);
+
+        KeyPair kp = kpg.generateKeyPair();
+        PublicKey publicKey = kp.getPublic();
+        PrivateKey privateKey = kp.getPrivate();
+
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
         byte[] encrypted = cipher.doFinal(text.getBytes("UTF-8"));
 
-        System.out.println("Original Text: " + text);
-        System.out.println("My Secret Key: " + myKey);
         System.out.println("Encrypted Text: "
             + Base64.getEncoder().encodeToString(encrypted));
 
-        cipher.init(Cipher.DECRYPT_MODE, key);
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
         byte[] decrypted = cipher.doFinal(encrypted);
 
         System.out.println("Decrypted Text: "
             + new String(decrypted, "UTF-8"));
+
+        sc.close();
     }
 }
