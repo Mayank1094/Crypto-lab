@@ -1,45 +1,24 @@
-<!DOCTYPE html>
-<html>
-<body>
-<h2>Diffie-Hellman Key Exchange</h2>
+import java.util.Scanner;
+import java.security.MessageDigest;
 
-Prime (p): <input id="p" value="23"><br><br>
-Generator (g): <input id="g" value="5"><br><br>
-Alice's Private Key (a): <input id="a" value="6"><br><br>
-Bob's Private Key (b): <input id="b" value="15"><br><br>
+public class SHA1 {
+    public static void main(String[] args) throws Exception {
+        Scanner sc = new Scanner(System.in);
 
-<button onclick="exchange()">Generate Key</button>
-<p id="result"></p>
+        System.out.print("Enter the text: ");
+        String text = sc.nextLine();
 
-<script>
-function exchange() {
-    let p = BigInt(document.getElementById("p").value);
-    let g = BigInt(document.getElementById("g").value);
-    let a = BigInt(document.getElementById("a").value);
-    let b = BigInt(document.getElementById("b").value);
+        MessageDigest md = MessageDigest.getInstance("SHA-1");
+        byte[] digest = md.digest(text.getBytes("UTF-8"));
 
-    function modPow(base, exp, mod) {
-        let result = 1n;
-        while (exp > 0n) {
-            if (exp % 2n === 1n)
-                result = result * base % mod;
-            base = base * base % mod;
-            exp = exp / 2n;
+        StringBuilder result = new StringBuilder();
+
+        for (byte b : digest) {
+            result.append(String.format("%02x", b & 0xff));
         }
-        return result;
+
+        System.out.println("SHA-1 Digest: " + result);
+
+        sc.close();
     }
-
-    let A = modPow(g, a, p);
-    let B = modPow(g, b, p);
-    let keyA = modPow(B, a, p);
-    let keyB = modPow(A, b, p);
-
-    document.getElementById("result").innerHTML =
-        "Alice's Public Key: " + A +
-        "<br>Bob's Public Key: " + B +
-        "<br>Alice's Shared Key: " + keyA +
-        "<br>Bob's Shared Key: " + keyB;
 }
-</script>
-</body>
-</html>
