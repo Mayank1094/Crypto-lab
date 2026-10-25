@@ -1,0 +1,29 @@
+<html>
+<body>
+<h2>Diffie-Hellman Key Exchange</h2>
+Prime (p): <input id="p" value="23"><br>
+Generator (g): <input id="g" value="5"><br>
+Alice's Key (a): <input id="a" value="6"><br>
+Bob's Key (b): <input id="b" value="15"><br>
+<button onclick="exchange()">Generate Key</button>
+<p id="r"></p>
+
+<script>
+function exchange() {
+let p=+document.getElementById("p").value;
+let g=+document.getElementById("g").value;
+let a=+document.getElementById("a").value;
+let b=+document.getElementById("b").value;
+
+let A=g**a%p, B=g**b%p;
+let k1=B**a%p, k2=A**b%p;
+
+document.getElementById("r").innerHTML=
+"Alice's Public Key: "+A+
+"<br>Bob's Public Key: "+B+
+"<br>Alice's Shared Key: "+k1+
+"<br>Bob's Shared Key: "+k2;
+}
+</script>
+</body>
+</html>
